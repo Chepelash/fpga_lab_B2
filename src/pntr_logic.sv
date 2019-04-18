@@ -82,7 +82,7 @@ always_comb
     if( wrreq_i && !full)
       begin
         top_next = top_succ_wr;
-        usedw_next = usedw + '1;
+        usedw_next = usedw + 1'b1;
         empty_next = '0;
         if( top_succ_wr == '0 )
           full_next = '1;
@@ -90,10 +90,10 @@ always_comb
     else if( rdreq_i && !empty )
       begin
         top_next = top_succ_rd;
-        usedw_next = usedw - '1;
+        usedw_next = usedw - 1'b1;
         full_next = '0;
         if( top_succ_rd == '0 )
-          empty_next = '0;
+          empty_next = '1;
       end
   end
 endmodule

@@ -18,23 +18,23 @@ module ram_memory #(
 
 // reading mechanism
 // one type
-//assign q_o = mem[rdpntr_i];
+assign q_o = mem[rdpntr_i];
 
 // second type
-logic [AWIDTH-1:0] rdpntr_reg;
-always_ff @( posedge clk_i )
-  begin
-    if( srst_i )
-      begin
-        q_o        <= 'x;
-        rdpntr_reg <= '0;
-      end
-    else
-      begin
-        q_o        <= mem[rdpntr_reg];
-        rdpntr_reg <= rdpntr_i;
-      end
-  end
+//logic [AWIDTH-1:0] rdpntr_reg;
+//always_ff @( posedge clk_i )
+//  begin
+//    if( srst_i )
+//      begin
+//        q_o        <= 'x;
+////        rdpntr_reg <= '0;
+//      end
+//    else
+//      begin
+//        q_o        <= mem[rdpntr_i];
+////        rdpntr_reg <= rdpntr_i;
+//      end
+//  end
   
 // writing mechanism
 always_ff @( posedge clk_i )
