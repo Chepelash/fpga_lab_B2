@@ -25,12 +25,7 @@ logic [AWIDTH-1:0] top_next;
 
 
 logic [AWIDTH-1:0] rdpntr; 
-//logic [AWIDTH-1:0] rdpntr_next; 
-//logic [AWIDTH-1:0] rdpntr_succ; 
-
 logic [AWIDTH-1:0] wrpntr;
-//logic [AWIDTH-1:0] wrpntr_next; 
-//logic [AWIDTH-1:0] wrpntr_succ;
 
 logic [AWIDTH:0]   usedw;
 logic [AWIDTH:0]   usedw_next;
@@ -61,27 +56,27 @@ always_ff @( posedge clk_i )
         usedw <= '0;
       end
     else
-      begin        
-        top <= top_next;
+      begin
+        top   <= top_next;
         empty <= empty_next;
-        full <= full_next;
+        full  <= full_next;
         usedw <= usedw_next;
-      end      
+      end
   end
 
 always_comb
   begin
-    top_next = top;
+    top_next    = top;
     top_succ_wr = top + '1;
     top_succ_rd = top - '1;
     
     empty_next = empty;
-    full_next = full;
+    full_next  = full;
     usedw_next = usedw;
     
     if( wrreq_i && !full)
       begin
-        top_next = top_succ_wr;
+        top_next   = top_succ_wr;
         usedw_next = usedw + 1'b1;
         empty_next = '0;
         if( top_succ_wr == '0 )
@@ -89,9 +84,9 @@ always_comb
       end
     else if( rdreq_i && !empty )
       begin
-        top_next = top_succ_rd;
+        top_next   = top_succ_rd;
         usedw_next = usedw - 1'b1;
-        full_next = '0;
+        full_next  = '0;
         if( top_succ_rd == '0 )
           empty_next = '1;
       end
