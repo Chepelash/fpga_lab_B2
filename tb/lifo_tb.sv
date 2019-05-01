@@ -83,17 +83,6 @@ task automatic writing_test;
           $display("Fail! Unexpected full flag");
           $stop();
         end
-      if( i == 2 && empty_o == 1)
-        begin
-          $display("Fail! Unexpected empty flag");
-          $stop();
-        end
-      if( i > 0 && i != usedw_o+1 )
-        begin
-          $display("Fail! Usedw wrong counting");
-          $display("i = %d; usedw_o+1 = %d", i, usedw_o+1);
-          $stop();
-        end
         
       wr_data = $urandom_range(2**DWIDTH - 1); 
       queue.push_back(wr_data);
@@ -101,7 +90,20 @@ task automatic writing_test;
       
       @( posedge clk );
       
+        
+      if( ( i > 0 ) && ( empty_o == 1 ) )
+        begin
+          $display("Fail! Unexpected empty flag");
+          $stop();
+        end
+      if( i != usedw_o )
+        begin
+          $display("Fail! Usedw wrong counting");
+          $display("i = %d; usedw_o = %d", i, usedw_o);
+          $stop();
+        end
     end
+    
   wrreq_i <= '0;
   @( posedge clk );
   // fail states 
@@ -166,8 +168,38 @@ task automatic reading_test;
 endtask
 
 task automatic overwriting;
+  $display("Starting overwriting and overreading test!");
+  
+  wrreq_i <= '1;
+  for( int i = 0; i < ( ADRESSES * 3 ); i++ )
+    begin
+      wr_data = $urandom_range(2**DWIDTH - 1); 
+      data_i <= wr_data;
+      @( posedge clk );
+      if( !full_o )
+        queue.push_back(wr_data);
+    end
+  wrreq_i <= '0;
 
-
+  @( posedge clk );
+  
+  rdreq_i <= '1;
+  for( int i = 0; i < ( ADRESSES * 3 ); i++ )
+    begin
+    @( posedge clk );
+      if( !empty_o )
+        begin
+          rd_data = queue.pop_back();
+          if( rd_data !== q_o )
+            begin
+              $display("Fail! rd_data = %x; q_o = %x", rd_data, q_o);
+              $stop();
+            end
+        end
+    end
+  
+  rdreq_i <= '0;
+  
 endtask
 
 initial
@@ -186,10 +218,10 @@ initial
     reading_test();
     $display("Reading test - OK!");
     
-//    overwriting();
-//    for( int i = 0; i < 100; i++ )
-//      @( posedge clk );
-    
+    overwriting();
+    $display("Overwriting and overreading test - OK!");
+  
+    $display("Everything is OK!");
     $stop();
   end
 endmodule
